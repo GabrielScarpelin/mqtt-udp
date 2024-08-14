@@ -1,0 +1,17 @@
+{
+  "name": "mqtt_udp",
+  "version": "0.0.1",
+  "description": "A javascript API to use the MQTT UDP Protocol",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gabriel Scarpelin Diniz",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.2.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {}
+}
