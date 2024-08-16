@@ -1,3 +1,5 @@
+// GPT GENERATED TESTS
+
 import MqttClient, {
   MqttPacketTypeEnum,
   Throttle,
