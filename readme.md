@@ -25,12 +25,12 @@ To install the library, you can use the NPM:
 Para instalar a biblioteca, você pode usar o NPM:
 
 ````bash
-~ npm install mqtt-udp-js
+~ npm install mqtt-udp
 ````
 ## Basics uses
 ### Client initialization
 ````typescript
-import Client, { Throttle } from 'mqtt-udp-js';
+import Client, { Throttle } from 'mqtt-udp';
 
 const clientOptions = {
   throttle: new Throttle(15, 500), // Max 15 packets each 500ms
@@ -64,7 +64,7 @@ client.subscribe('sensors/temperature', (packet) => {
 ````
 ### Sending messages
 ````typescript
-import Client, { Throttle, MqttUdpPacket, MqttPacketTypeEnum } from 'mqtt-udp-js';
+import Client, { Throttle, MqttUdpPacket, MqttPacketTypeEnum } from 'mqtt-udp';
 
 const packet = new MqttUdpPacket({
   packetType: MqttPacketTypeEnum.PUBLISH, // PUBLISH
