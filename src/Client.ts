@@ -130,8 +130,6 @@ class Client {
     port = 1883,
     address = this.broadcastAddress,
   ) {
-    console.log("Packets waiting ack: ", this.packetsWaitingAck);
-
     const packet = PacketMapper.generatePacketBuffer(
       mqttPacket,
       this.packetsWaitingAck,
@@ -181,7 +179,7 @@ class Client {
         this._receivePingResponse();
         break;
       default:
-        console.log(`Received unknown packet type ${packetType}`);
+        console.error(`Received unknown packet type ${packetType}`);
     }
   }
 
@@ -223,7 +221,6 @@ class Client {
         if (err) {
           console.error(err);
         }
-        console.log("Ping response sent successfully");
       });
     };
 
@@ -240,7 +237,6 @@ class Client {
       if (err) {
         console.error(err);
       }
-      console.log("Ping sent successfully");
     });
   }
 
@@ -271,12 +267,6 @@ class Client {
             console.error(err);
             return;
           }
-          console.log(
-            "Resending message retries:",
-            this.packetsWaitingAck[packetId].retries,
-            "Packet Buffer: ",
-            packet,
-          );
         });
         if (this.packetsWaitingAck[packetId].retries < 5) {
           this._startPubackTimeout(packet, packetId, port, ip);
@@ -342,7 +332,6 @@ class Client {
     const topic = receivedPacket.getTopic();
     const isPredefinedTopicString =
       this._verifyPredefinedTopicAndSendResponseText(topic);
-    console.log("isPredefinedTopicString", isPredefinedTopicString);
     if (isPredefinedTopicString !== "UNKNOWN") {
       const packet = PacketMapper.generatePacketBuffer(
         new MqttUdpPacket({
@@ -358,7 +347,6 @@ class Client {
       });
       return;
     }
-    console.log("Sending configurable items");
     for (let topicSubscribed of this.topicsSubscribed) {
       const topic = topicSubscribed.split("/");
       if (

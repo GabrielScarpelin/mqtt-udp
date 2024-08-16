@@ -42,7 +42,6 @@ class NetAddr {
       .match(/.{1,8}/g)
       .map(binaryToIp)
       .join(".");
-    console.log(broadcastIp);
     return broadcastIp;
   }
 
