@@ -62,7 +62,7 @@ class MqttUdpPacket {
     this.rinfo = rinfo;
   }
   setPacketId(packetId: number): void {
-    if (this.packetId > 65535 || this.packetId < 1) {
+    if (packetId > 65535 || packetId < 1) {
       throw new Error("Packet ID must be between 1 and 65535");
     }
     this.packetId = packetId;

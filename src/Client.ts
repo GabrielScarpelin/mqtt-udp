@@ -63,13 +63,15 @@ class Client {
       name: "Node " + this.nodeId,
       location: "Unknown",
     };
-    for (const itemConfigurable of itemsConfigurable) {
-      this.topicsSubscribed.push(
-        `$SYS/conf/${this.nodeId}/${itemConfigurable.item}`,
-      );
-      this.functionForTopics[
-        `$SYS/conf/${this.nodeId}/${itemConfigurable.item}`
-      ] = itemConfigurable.functionItem;
+    if (itemsConfigurable && itemsConfigurable.length > 0) {
+      for (const itemConfigurable of itemsConfigurable) {
+        this.topicsSubscribed.push(
+          `$SYS/conf/${this.nodeId}/${itemConfigurable.item}`,
+        );
+        this.functionForTopics[
+          `$SYS/conf/${this.nodeId}/${itemConfigurable.item}`
+        ] = itemConfigurable.functionItem;
+      }
     }
 
     if (throttle) {
@@ -156,11 +158,6 @@ class Client {
   }
 
   private _handleMessage(msg: Buffer, rinfo: dgram.RemoteInfo) {
-    if (
-      rinfo.address === NetAddr.getLocalIp() &&
-      rinfo.port === this.listenPort
-    )
-      return;
     const packetType = msg.readUInt4(0);
     switch (packetType) {
       case 3:
@@ -189,6 +186,7 @@ class Client {
       const hasSubscribed = this._checkTopicAndReturnSubscribed(
         packet.getTopic(),
       );
+
       if (hasSubscribed) {
         if (packetId && packet.getQos() > 0) {
           this._sendPubAck(packetId, rinfo);
@@ -201,7 +199,7 @@ class Client {
   }
 
   private _receivePubAck(msg: Buffer) {
-    const packetId = msg.readUInt16BE(1);
+    const packetId = msg.readUInt16BE(2);
     if (this.packetsWaitingAck[packetId]) {
       clearInterval(this.packetsWaitingAck[packetId].intervalId);
       delete this.packetsWaitingAck[packetId];
@@ -241,7 +239,9 @@ class Client {
   }
 
   private _sendPubAck(packetId: number, rinfo: dgram.RemoteInfo) {
-    const packet = Buffer.from([0x40, 0x02]);
+    const packet = Buffer.alloc(4);
+    packet.writeUInt8(0x40, 0);
+    packet.writeUInt8(0x02, 1);
     packet.writeUInt16BE(packetId, 2);
     this.client.send(packet, rinfo.port, rinfo.address, (err) => {
       if (err) {

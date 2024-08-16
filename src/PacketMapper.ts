@@ -103,6 +103,9 @@ class PacketMapper {
     packet: MqttUdpPacket;
     packetId?: number;
   } {
+    if (msg.length < 4) {
+      throw new Error("Invalid packet");
+    }
     const [payloadLength, bytesRead] = this.readVariableBytePayloadLength(msg);
 
     const qos = (msg.readUInt4(1) >> 1) & 0x03;
