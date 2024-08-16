@@ -1,6 +1,6 @@
 {
   "name": "mqtt-udp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A javascript API to use the MQTT UDP Protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
