@@ -7,25 +7,23 @@ class MqttUdpPacket {
   private message: string;
   private qos: number;
   private rinfo: dgram.RemoteInfo;
+  private packetId: number;
 
   constructor({
     packetType,
     topic,
     message,
     qos,
-    rinfo,
   }: {
     packetType?: MqttPacketTypeEnum;
     topic?: string;
     message?: string;
     qos?: number;
-    rinfo?: dgram.RemoteInfo;
   }) {
     this.packetType = packetType;
     this.topic = topic;
     this.message = message;
-    this.qos = qos;
-    this.rinfo = rinfo;
+    this.qos = qos || 0;
   }
   // Getters
   getPacketType(): MqttPacketTypeEnum {
@@ -43,6 +41,10 @@ class MqttUdpPacket {
   getRinfo(): dgram.RemoteInfo {
     return this.rinfo;
   }
+  getPacketId(): number {
+    return this.packetId;
+  }
+
   // Setters
   setPacketType(packetType: MqttPacketTypeEnum): void {
     this.packetType = packetType;
@@ -58,6 +60,12 @@ class MqttUdpPacket {
   }
   setRinfo(rinfo: dgram.RemoteInfo): void {
     this.rinfo = rinfo;
+  }
+  setPacketId(packetId: number): void {
+    if (this.packetId > 65535 || this.packetId < 1) {
+      throw new Error("Packet ID must be between 1 and 65535");
+    }
+    this.packetId = packetId;
   }
 }
 export default MqttUdpPacket;

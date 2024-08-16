@@ -1,6 +1,6 @@
 import BufferOptions, { Buffer } from "buffer";
-import dgram from "dgram";
-import Client from "./src/client.js";
+import Client from "./src/Client.js";
+import Throttle from "./src/Throttle.js";
 import MqttUdpPacket from "./src/DTOs/PacketDto.js";
 import MqttPacketTypeEnum from "./src/enums/PacketTypeEnum.js";
 
@@ -35,51 +35,7 @@ Buffer.prototype.readUInt4 = function (this: Buffer, uInt4Offset: number = 0) {
   return this[offset] & 0b00001111;
 };
 
-const mqtt = new Client({
-  isThrottlingDisabled: false,
-  packetThrottle: 10,
-  throttleTimeoutMs: 1000,
-});
+const MqttUdpClient = Client;
 
-mqtt.subscribe(
-  "home/room/light",
-  (message) => {
-    console.log("Acender ou apagar a luz da sala. Mensagem:", message);
-    mqtt.sendMessage(
-      new MqttUdpPacket({
-        packetType: MqttPacketTypeEnum.PUBLISH,
-        topic: "house/home/light",
-        message: "turn off",
-        qos: 0,
-      }),
-    );
-  },
-  (err) => {
-    if (err) {
-      console.log(`Error subscribing to topic: ${err}`);
-    } else {
-      console.log("Subscribed to topic");
-    }
-  },
-);
-
-mqtt.subscribe(
-  "home/kitchen/light",
-  (message) => {
-    console.log("Acender ou apagar a luz da cozinha. Mensagem:", message);
-  },
-  (err) => {
-    if (err) {
-      console.log(`Error subscribing to topic: ${err}`);
-    } else {
-      console.log("Subscribed to topic");
-    }
-  },
-);
-
-const newPacket = new MqttUdpPacket({
-  packetType: MqttPacketTypeEnum.PUBLISH,
-  topic: "home/room/light",
-  message: "turn on",
-  qos: 0,
-});
+export default MqttUdpClient;
+export { Throttle, MqttUdpPacket, MqttPacketTypeEnum };

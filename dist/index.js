@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import Client from "./src/client.js";
+import Client from "./src/Client.js";
 import MqttUdpPacket from "./src/DTOs/PacketDto.js";
 import MqttPacketTypeEnum from "./src/enums/PacketTypeEnum.js";
 Buffer.prototype.writeUInt4 = function (value, uInt4Offset = 0) {
@@ -27,15 +27,19 @@ const mqtt = new Client({
     isThrottlingDisabled: false,
     packetThrottle: 10,
     throttleTimeoutMs: 1000,
+    itemsConfigurable: [
+        {
+            item: "roomsQuantity",
+            function: (value) => {
+                console.log("Quantidade de quartos:", value);
+            },
+        },
+    ],
+}, () => {
+    console.log("Client listening on port 1883");
 });
 mqtt.subscribe("home/room/light", (message) => {
     console.log("Acender ou apagar a luz da sala. Mensagem:", message);
-    mqtt.sendMessage(new MqttUdpPacket({
-        packetType: MqttPacketTypeEnum.PUBLISH,
-        topic: "house/home/light",
-        message: "turn off",
-        qos: 0,
-    }));
 }, (err) => {
     if (err) {
         console.log(`Error subscribing to topic: ${err}`);
@@ -58,6 +62,14 @@ const newPacket = new MqttUdpPacket({
     packetType: MqttPacketTypeEnum.PUBLISH,
     topic: "home/room/light",
     message: "turn on",
-    qos: 0,
+    qos: 1,
 });
+// mqtt.sendMessage(
+//   new MqttUdpPacket({
+//     packetType: MqttPacketTypeEnum.PUBLISH,
+//     topic: "house/home/light",
+//     message: "turn off",
+//     qos: 1,
+//   }),
+// );
 //# sourceMappingURL=index.js.map

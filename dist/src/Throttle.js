@@ -2,8 +2,10 @@ class Throttle {
     packetsPerTime;
     ms;
     packetsCount = 0;
+    packetsCountRead = 0;
     timeout = null;
-    queuedPackets = [];
+    queuedPacketsToSend = [];
+    queuedPacketsToRead = [];
     constructor(packetsPerTime, ms) {
         this.packetsPerTime = packetsPerTime || 10;
         this.ms = ms || 1000;
@@ -17,18 +19,35 @@ class Throttle {
             executeFunction();
         }
         else {
-            this.queuedPackets.push(executeFunction);
+            this.queuedPacketsToSend.push(executeFunction);
         }
     }
     _startTimeout() {
         this.timeout = setTimeout(() => {
             this.packetsCount = 0;
+            this.packetsCountRead = 0;
             this.timeout = null;
-            if (this.queuedPackets.length > 0) {
+            if (this.queuedPacketsToSend.length > 0) {
                 this._startTimeout();
-                this.send(this.queuedPackets.shift());
+                this.send(this.queuedPacketsToSend.shift());
+            }
+            if (this.queuedPacketsToRead.length > 0) {
+                this._startTimeout();
+                this.read(this.queuedPacketsToRead.shift());
             }
         }, this.ms);
+    }
+    read(executeFunction) {
+        if (!this.timeout) {
+            this._startTimeout();
+        }
+        if (this.packetsCountRead < this.packetsPerTime) {
+            this.packetsCountRead++;
+            executeFunction();
+        }
+        else {
+            this.queuedPacketsToRead.push(executeFunction);
+        }
     }
 }
 export default Throttle;
